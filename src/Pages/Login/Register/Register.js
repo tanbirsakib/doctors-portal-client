@@ -1,25 +1,28 @@
-import { Button, Container, Grid, TextField, Typography } from '@mui/material';
+import { Alert, Button, Container, Grid, LinearProgress, Stack, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import Navigation from '../../Shared/Navigation/Navigation';
 import login from '../../../images/login.png'
 import { NavLink } from 'react-router-dom';
+import useAuth from '../../../hooks/useAuth';
 
 const Register = () => {
+    const { registerNewUser, loading, aurthError, user } = useAuth();
     const [loginData, setLoginData] = useState({});
     const handleOnChange = (e) => {
         const field = e.target.name;
         const value = e.target.value;
-      
+
         const newLoginData = { ...loginData }
         newLoginData[field] = value;
         console.log(newLoginData)
         setLoginData(newLoginData)
     }
     const handleSubmit = (e) => {
-        if(loginData.password !== loginData.password2){
+        if (loginData.password !== loginData.password2) {
             alert('Your password didnt matched')
             return;
         }
+        registerNewUser(loginData.email, loginData.password);
         e.preventDefault()
     }
     return (
@@ -31,11 +34,11 @@ const Register = () => {
                         <Typography sx={{ mt: 8 }} variant="body1" gutterBottom component="div">
                             Register
                         </Typography>
-                        <form onSubmit={handleSubmit}>
+                        {!loading && <form onSubmit={handleSubmit}>
                             <TextField
                                 onChange={handleOnChange}
                                 name="email"
-                                type = "email"
+                                type="email"
                                 sx={{ width: "75%" }}
                                 id="outlined-basic"
                                 label="Your Email"
@@ -56,11 +59,19 @@ const Register = () => {
                                 type="password"
                                 label="Confirm Password"
                                 variant="standard" />
-                            <NavLink to="/register">
+                            <NavLink to="/login">
                                 <Button sx={{ width: "75%" }} type="submit">Already have an account? Go to login </Button>
                             </NavLink>
-                            <Button style={{backgroundColor : "#30b8aa", color : "white"}} sx={{ width: "75%" }} type="submit">Sing Up </Button>
-                        </form>
+                            <Button style={{ backgroundColor: "#30b8aa", color: "white" }} sx={{ width: "75%" }} type="submit">Sing Up </Button>
+                        </form>}
+                        {
+                            loading &&
+                            <Stack sx={{ width: '100%', color: 'grey.500' }} spacing={2}>
+                                <LinearProgress color="secondary" />
+                            </Stack>
+                        }
+                        {user.email && <Alert sx={{ mt: 1 }} severity="success">Registered Successfully</Alert>}
+                        {aurthError && <Alert sx={{ mt: 1 }} severity="error">{aurthError}</Alert>}
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <img style={{ width: "100%" }} src={login} alt="" />

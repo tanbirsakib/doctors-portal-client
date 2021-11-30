@@ -1,20 +1,27 @@
-import { Button, Container, Grid, TextField, Typography } from '@mui/material';
+import { Alert, Button, Container, Grid, LinearProgress, Stack, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import Navigation from '../Shared/Navigation/Navigation';
 import login from '../../images/login.png'
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation, useHistory } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 
 const Login = () => {
+    const { signInUser, loading, user, aurthError } = useAuth();
     const [loginData, setLoginData] = useState({});
+    
+    const location = useLocation();
+    const history = useHistory()
+
     const handleOnChange = (e) => {
         const field = e.target.name;
         const value = e.target.value;
-        console.log(field, value)
         const newLoginData = { ...loginData }
         newLoginData[field] = value;
         setLoginData(newLoginData)
     }
     const handleSubmit = (e) => {
+        console.log(loginData);
+        signInUser(loginData.email, loginData.password, location, history);
         e.preventDefault()
     }
     return (
@@ -26,7 +33,7 @@ const Login = () => {
                         <Typography sx={{ mt: 8 }} variant="body1" gutterBottom component="div">
                             Login
                         </Typography>
-                        <form onsSubmit={handleSubmit}>
+                        {!loading && <form onSubmit={handleSubmit}>
                             <TextField
                                 onChange={handleOnChange}
                                 name="email"
@@ -45,8 +52,16 @@ const Login = () => {
                             <NavLink to="/register">
                                 <Button sx={{ width: "75%" }} type="submit">New user? Go for registration </Button>
                             </NavLink>
-                            <Button style={{backgroundColor : "#30b8aa", color : "white"}} sx={{ width: "75%" }} type="submit">Login </Button>
-                        </form>
+                            <Button  style={{ backgroundColor: "#30b8aa", color: "white" }} sx={{ width: "75%" }} type="submit">Login </Button>
+                        </form>}
+                        {
+                            loading &&
+                            <Stack sx={{ width: '100%', color: 'grey.500' }} spacing={2}>
+                                <LinearProgress color="secondary" />
+                            </Stack>
+                        }
+                        {user.email && <Alert sx={{ mt: 1 }} severity="success">Registered Successfully</Alert>}
+                        {aurthError && <Alert sx={{ mt: 1 }} severity="error">{aurthError}</Alert>}
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <img style={{ width: "100%" }} src={login} alt="" />
