@@ -1,4 +1,5 @@
 import { Alert, Button, Container, Grid, LinearProgress, Stack, TextField, Typography } from '@mui/material';
+import GoogleIcon from '@mui/icons-material/Google';
 import React, { useState } from 'react';
 import Navigation from '../Shared/Navigation/Navigation';
 import login from '../../images/login.png'
@@ -6,13 +7,13 @@ import { NavLink, useLocation, useHistory } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 
 const Login = () => {
-    const { signInUser, loading, user, aurthError } = useAuth();
+    const { signInUser, loading, user, aurthError, googleSignIn } = useAuth();
     const [loginData, setLoginData] = useState({});
-    
+
     const location = useLocation();
     const history = useHistory()
 
-    const handleOnChange = (e) => {
+    const handleOnBlur = (e) => {
         const field = e.target.name;
         const value = e.target.value;
         const newLoginData = { ...loginData }
@@ -24,6 +25,12 @@ const Login = () => {
         signInUser(loginData.email, loginData.password, location, history);
         e.preventDefault()
     }
+
+
+    const handleGoogleSignIn = () => {
+        googleSignIn(location, history)
+    }
+
     return (
         <div>
             <Navigation></Navigation>
@@ -35,14 +42,15 @@ const Login = () => {
                         </Typography>
                         {!loading && <form onSubmit={handleSubmit}>
                             <TextField
-                                onChange={handleOnChange}
+                                onBlur={handleOnBlur}
                                 name="email"
                                 sx={{ width: "75%" }}
                                 id="outlined-basic"
                                 label="Your Email"
                                 variant="standard" />
+
                             <TextField
-                                onChange={handleOnChange}
+                                onBlur={handleOnBlur}
                                 name="password"
                                 sx={{ width: "75%" }}
                                 id="outlined-basic"
@@ -52,7 +60,9 @@ const Login = () => {
                             <NavLink to="/register">
                                 <Button sx={{ width: "75%" }} type="submit">New user? Go for registration </Button>
                             </NavLink>
-                            <Button  style={{ backgroundColor: "#30b8aa", color: "white" }} sx={{ width: "75%" }} type="submit">Login </Button>
+                            <Button style={{ backgroundColor: "#30b8aa", color: "white" }} sx={{ width: "75%" }} type="submit">Login </Button>
+                            <br />
+                            <Button onClick={handleGoogleSignIn} sx={{ color: "blue" }}><GoogleIcon /></Button>
                         </form>}
                         {
                             loading &&

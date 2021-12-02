@@ -2,13 +2,14 @@ import { Alert, Button, Container, Grid, LinearProgress, Stack, TextField, Typog
 import React, { useState } from 'react';
 import Navigation from '../../Shared/Navigation/Navigation';
 import login from '../../../images/login.png'
-import { NavLink } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 
 const Register = () => {
     const { registerNewUser, loading, aurthError, user } = useAuth();
     const [loginData, setLoginData] = useState({});
-    const handleOnChange = (e) => {
+    const history = useHistory()
+    const handleOnBlur = (e) => {
         const field = e.target.name;
         const value = e.target.value;
 
@@ -22,7 +23,8 @@ const Register = () => {
             alert('Your password didnt matched')
             return;
         }
-        registerNewUser(loginData.email, loginData.password);
+        registerNewUser(loginData.email, loginData.password, loginData.name, history);
+        console.log("the name frog reg panel", loginData.name)
         e.preventDefault()
     }
     return (
@@ -35,8 +37,15 @@ const Register = () => {
                             Register
                         </Typography>
                         {!loading && <form onSubmit={handleSubmit}>
+                        <TextField
+                                onBlur={handleOnBlur}
+                                name="name"
+                                sx={{ width: "75%" }}
+                                id="outlined-basic"
+                                label="Your Name"
+                                variant="standard" />
                             <TextField
-                                onChange={handleOnChange}
+                                onBlur={handleOnBlur}
                                 name="email"
                                 type="email"
                                 sx={{ width: "75%" }}
@@ -44,7 +53,7 @@ const Register = () => {
                                 label="Your Email"
                                 variant="standard" />
                             <TextField
-                                onChange={handleOnChange}
+                                onBlur={handleOnBlur}
                                 name="password"
                                 sx={{ width: "75%" }}
                                 id="outlined-basic"
@@ -52,7 +61,7 @@ const Register = () => {
                                 label="Password"
                                 variant="standard" />
                             <TextField
-                                onChange={handleOnChange}
+                                onBlur={handleOnBlur}
                                 name="password2"
                                 sx={{ width: "75%" }}
                                 id="outlined-basic"
